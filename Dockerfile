@@ -7,6 +7,9 @@ RUN apt-get update && apt-get install -y unzip curl libpng-dev libjpeg-dev libon
 # Enable Apache rewrite module
 RUN a2enmod rewrite
 
+# 🔥 Allow .htaccess override for mod_rewrite to work
+RUN sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
+
 # Configure Apache to use port 8080 for Cloud Run
 ENV PORT=8080
 EXPOSE 8080
@@ -16,10 +19,13 @@ RUN sed -i 's/80/${PORT}/g' /etc/apache2/ports.conf \
 # PHP upload size limit
 COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
-# Copy your full WordPress source (or pre-downloaded release)
+# Copy your full WordPress source
 COPY wordpress/ /var/www/html/
 
-# Copy wp-config that reads DB from env
+# 🔥 Include .htaccess for REST API and permalinks
+COPY htaccess /var/www/html/.htaccess
+
+# Copy wp-config that reads DB + domain from env
 COPY wp-config.php /var/www/html/wp-config.php
 
 # Fix permissions
