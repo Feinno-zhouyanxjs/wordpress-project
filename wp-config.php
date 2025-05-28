@@ -40,6 +40,11 @@ define( 'DB_COLLATE', '' );
 define('WP_HOME', 'https://hadith.hudaring.com');
 define('WP_SITEURL', 'https://hadith.hudaring.com');
 
+// Trust Cloud Run's HTTPS forwarding
+if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+    $_SERVER['HTTPS'] = 'on';
+}
+
 /**#@+
  * Authentication unique keys and salts.
  *
