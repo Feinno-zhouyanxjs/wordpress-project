@@ -20,36 +20,16 @@
 
 // ** Database settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
-// define( 'DB_NAME', 'wordpress' );
-
-// /** Database username */
-// define( 'DB_USER', 'hudaring' );
-
-// /** Database password */
-// define( 'DB_PASSWORD', ']]qUM+xtFv5M].3t' );
-
-// /** Database hostname */
-// define( 'DB_HOST', ':/cloudsql/gcp-project-250430:asia-southeast1:hudaring' );
-
-// /** Database charset to use in creating database tables. */
-// define( 'DB_CHARSET', 'utf8' );
-
-// /** The database collate type. Don't change this if in doubt. */
-// define( 'DB_COLLATE', '' );
-
-// define('WP_HOME', 'https://hadith.hudaring.com');
-// define('WP_SITEURL', 'https://hadith.hudaring.com');
-
 define( 'DB_NAME', 'wordpress' );
 
 /** Database username */
-define( 'DB_USER', 'ray' );
+define( 'DB_USER', 'hudaring' );
 
 /** Database password */
-define( 'DB_PASSWORD', 'rayRAY@123' );
+define( 'DB_PASSWORD', ']]qUM+xtFv5M].3t' );
 
 /** Database hostname */
-define( 'DB_HOST', '34.143.247.81:8806' );
+define( 'DB_HOST', ':/cloudsql/gcp-project-250430:asia-southeast1:hudaring' );
 
 /** Database charset to use in creating database tables. */
 define( 'DB_CHARSET', 'utf8' );
@@ -57,8 +37,28 @@ define( 'DB_CHARSET', 'utf8' );
 /** The database collate type. Don't change this if in doubt. */
 define( 'DB_COLLATE', '' );
 
-define('WP_HOME', 'https://dev-wordpress-project-780958339750.asia-southeast1.run.app');
-define('WP_SITEURL', 'https://dev-wordpress-project-780958339750.asia-southeast1.run.app');
+define('WP_HOME', 'https://hadith.hudaring.com');
+define('WP_SITEURL', 'https://hadith.hudaring.com');
+
+// define( 'DB_NAME', 'wordpress' );
+
+// /** Database username */
+// define( 'DB_USER', 'ray' );
+
+// /** Database password */
+// define( 'DB_PASSWORD', 'rayRAY@123' );
+
+// /** Database hostname */
+// define( 'DB_HOST', '34.143.247.81:8806' );
+
+// /** Database charset to use in creating database tables. */
+// define( 'DB_CHARSET', 'utf8' );
+
+// /** The database collate type. Don't change this if in doubt. */
+// define( 'DB_COLLATE', '' );
+
+// define('WP_HOME', 'https://dev-wordpress-project-780958339750.asia-southeast1.run.app');
+// define('WP_SITEURL', 'https://dev-wordpress-project-780958339750.asia-southeast1.run.app');
 
 // Trust Cloud Run's HTTPS forwarding
 if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
