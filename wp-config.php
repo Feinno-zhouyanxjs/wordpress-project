@@ -49,7 +49,7 @@ define( 'DB_USER', 'ray' );
 define( 'DB_PASSWORD', 'rayRAY@123' );
 
 /** Database hostname */
-define( 'DB_HOST', '34.143.247.81' );
+define( 'DB_HOST', '34.143.247.81:8806' );
 
 /** Database charset to use in creating database tables. */
 define( 'DB_CHARSET', 'utf8' );
@@ -57,8 +57,8 @@ define( 'DB_CHARSET', 'utf8' );
 /** The database collate type. Don't change this if in doubt. */
 define( 'DB_COLLATE', '' );
 
-define('WP_HOME', 'https://dev-hadith.hudaring.com');
-define('WP_SITEURL', 'https://dev-hadith.hudaring.com');
+// define('WP_HOME', 'https://dev-hadith.hudaring.com');
+// define('WP_SITEURL', 'https://dev-hadith.hudaring.com');
 
 // Trust Cloud Run's HTTPS forwarding
 if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
