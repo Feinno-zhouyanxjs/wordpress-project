@@ -57,8 +57,8 @@ define( 'DB_CHARSET', 'utf8' );
 /** The database collate type. Don't change this if in doubt. */
 define( 'DB_COLLATE', '' );
 
-// define('WP_HOME', 'https://dev-hadith.hudaring.com');
-// define('WP_SITEURL', 'https://dev-hadith.hudaring.com');
+define('WP_HOME', 'https://dev-wordpress-project-780958339750.asia-southeast1.run.app');
+define('WP_SITEURL', 'https://dev-wordpress-project-780958339750.asia-southeast1.run.app');
 
 // Trust Cloud Run's HTTPS forwarding
 if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
