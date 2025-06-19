@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Hudaring Like API
+ * Plugin Name: Hudaring Slim API
  * Description: Custom REST endpoint that returns minimal post data with like count and featured image.
  * Version: 1.1
  * Author: hudaring
