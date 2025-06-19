@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Hudaring Like API
- * Description: Provides a custom REST API endpoint for post data including like count and featured image.
- * Version: 1.0
+ * Description: Custom REST endpoint that returns minimal post data with like count and featured image.
+ * Version: 1.1
  * Author: hudaring
  */
 
@@ -26,22 +26,29 @@ function hudaring_custom_posts($request) {
     foreach ($query->posts as $post) {
         $post_id = $post->ID;
         $featured_id = get_post_thumbnail_id($post_id);
-        $featured_post = $featured_id ? get_post($featured_id) : null;
-        $media_details = $featured_id ? wp_get_attachment_metadata($featured_id) : null;
-        $image_url = $featured_id ? wp_get_attachment_url($featured_id) : null;
+        $images = [];
+
+        if ($featured_id) {
+            $attachment = get_post($featured_id);
+            $media_details = wp_get_attachment_metadata($featured_id);
+            $image_url = wp_get_attachment_url($featured_id);
+
+            $images[] = [
+                'id' => $featured_id,
+                'slug' => $attachment->post_name,
+                'title' => $attachment->post_title,
+                'source_url' => $image_url,
+                'width' => $media_details['width'] ?? null,
+                'height' => $media_details['height'] ?? null
+            ];
+        }
 
         $posts[] = [
             'id' => $post_id,
             'slug' => $post->post_name,
             'title' => get_the_title($post_id),
             'like_count' => (int) get_post_meta($post_id, 'hudaring_like_count', true),
-            'featured_image' => $featured_id ? [
-                'id' => $featured_id,
-                'slug' => $featured_post->post_name,
-                'title' => $featured_post->post_title,
-                'source_url' => $image_url,
-                'media_details' => $media_details
-            ] : null
+            'featured_image' => $images
         ];
     }
 
