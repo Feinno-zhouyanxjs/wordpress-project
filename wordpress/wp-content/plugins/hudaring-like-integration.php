@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Hudaring Like Count Integration
- * Description: Merge custom post meta data into the REST API response.
+ * Description: Merge custom post meta data hudaring_like_count into the REST API response.
  * Version: 1.0
  * Author: hudaring
  */
