@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Hudaring Slim API
- * Description: Custom REST endpoint that returns minimal post data with like count and featured image and resized file variants with path prefix.
- * Version: 1.4
+ * Description: Custom REST endpoint that returns minimal post data with like count and featured image with size variants and metadata.
+ * Version: 1.5
  * Author: hudaring
  */
 
@@ -35,9 +35,9 @@ function hudaring_custom_posts($request) {
             $file_name = $media_details['file'] ?? null;
             $alt_text = get_post_meta($featured_id, '_wp_attachment_image_alt', true);
             $mime_type = $attachment->post_mime_type;
+            $attachment_date = $attachment->post_date;
 
             // Parse year and month from attachment date
-            $attachment_date = $attachment->post_date; // Format: 'YYYY-MM-DD HH:MM:SS'
             $date_parts = explode('-', substr($attachment_date, 0, 7)); // [YYYY, MM]
             $year = $date_parts[0] ?? '0000';
             $month = $date_parts[1] ?? '00';
@@ -52,7 +52,10 @@ function hudaring_custom_posts($request) {
 
                 $postfixes = ['1024x1024', '500x500', '300x300', '150x150'];
                 foreach ($postfixes as $size) {
-                    $resized_files[] = $path_prefix . $name_only . '-' . $size . $ext;
+                    $resized_files[] = [
+                        'size' => $size,
+                        'file' => $path_prefix . $name_only . '-' . $size . $ext
+                    ];
                 }
             }
 
@@ -66,6 +69,7 @@ function hudaring_custom_posts($request) {
                 'height' => $media_details['height'] ?? null,
                 'alt_text' => $alt_text,
                 'mime_type' => $mime_type,
+                'post_date' => $attachment_date,
                 'resized_files' => $resized_files
             ];
         }
