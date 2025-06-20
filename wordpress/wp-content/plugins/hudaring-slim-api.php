@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Hudaring Slim API
  * Description: Custom REST endpoint that returns minimal post data with like count and featured image.
- * Version: 1.1
+ * Version: 1.0
  * Author: hudaring
  */
 
