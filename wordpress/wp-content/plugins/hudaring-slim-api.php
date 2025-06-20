@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Hudaring Slim API
- * Description: Custom REST endpoint that returns minimal post data with like count and featured image.
- * Version: 1.2
+ * Description: Custom REST endpoint that returns minimal post data with like count and featured image and resized file variants with path prefix.
+ * Version: 1.4
  * Author: hudaring
  */
 
@@ -36,6 +36,26 @@ function hudaring_custom_posts($request) {
             $alt_text = get_post_meta($featured_id, '_wp_attachment_image_alt', true);
             $mime_type = $attachment->post_mime_type;
 
+            // Parse year and month from attachment date
+            $attachment_date = $attachment->post_date; // Format: 'YYYY-MM-DD HH:MM:SS'
+            $date_parts = explode('-', substr($attachment_date, 0, 7)); // [YYYY, MM]
+            $year = $date_parts[0] ?? '0000';
+            $month = $date_parts[1] ?? '00';
+            $path_prefix = "/wp/$year/$month/";
+
+            // Generate resized file paths
+            $resized_files = [];
+            if ($file_name && strpos($file_name, '.') !== false) {
+                $dot_pos = strrpos($file_name, '.');
+                $name_only = substr($file_name, 0, $dot_pos);
+                $ext = substr($file_name, $dot_pos); // includes the dot, e.g. '.jpg'
+
+                $postfixes = ['1024x1024', '500x500', '300x300', '150x150'];
+                foreach ($postfixes as $size) {
+                    $resized_files[] = $path_prefix . $name_only . '-' . $size . $ext;
+                }
+            }
+
             $images[] = [
                 'id' => $featured_id,
                 'slug' => $attachment->post_name,
@@ -45,7 +65,8 @@ function hudaring_custom_posts($request) {
                 'width' => $media_details['width'] ?? null,
                 'height' => $media_details['height'] ?? null,
                 'alt_text' => $alt_text,
-                'mime_type' => $mime_type
+                'mime_type' => $mime_type,
+                'resized_files' => $resized_files
             ];
         }
 
