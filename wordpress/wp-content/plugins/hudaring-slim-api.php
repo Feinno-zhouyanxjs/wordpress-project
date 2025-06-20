@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Hudaring Slim API
- * Description: Custom REST endpoint that returns minimal post data with like count and featured image with size variants and metadata.
- * Version: 1.5
+ * Description: Custom REST endpoint that returns minimal post data with like count and featured image, with key-value size variants and metadata.
+ * Version: 1.6
  * Author: hudaring
  */
 
@@ -38,24 +38,21 @@ function hudaring_custom_posts($request) {
             $attachment_date = $attachment->post_date;
 
             // Parse year and month from attachment date
-            $date_parts = explode('-', substr($attachment_date, 0, 7)); // [YYYY, MM]
+            $date_parts = explode('-', substr($attachment_date, 0, 7));
             $year = $date_parts[0] ?? '0000';
             $month = $date_parts[1] ?? '00';
             $path_prefix = "/wp/$year/$month/";
 
-            // Generate resized file paths
+            // Generate resized file map
             $resized_files = [];
             if ($file_name && strpos($file_name, '.') !== false) {
                 $dot_pos = strrpos($file_name, '.');
                 $name_only = substr($file_name, 0, $dot_pos);
-                $ext = substr($file_name, $dot_pos); // includes the dot, e.g. '.jpg'
+                $ext = substr($file_name, $dot_pos);
 
                 $postfixes = ['1024x1024', '500x500', '300x300', '150x150'];
                 foreach ($postfixes as $size) {
-                    $resized_files[] = [
-                        'size' => $size,
-                        'file' => $path_prefix . $name_only . '-' . $size . $ext
-                    ];
+                    $resized_files[$size] = $path_prefix . $name_only . '-' . $size . $ext;
                 }
             }
 
