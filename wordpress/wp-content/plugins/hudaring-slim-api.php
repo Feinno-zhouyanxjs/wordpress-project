@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Hudaring Slim API
  * Description: Custom REST endpoint that returns minimal post data with like count and featured image, with key-value size variants and metadata.
- * Version: 1.7
+ * Version: 1.8
  * Author: hudaring
  */
 
@@ -35,7 +35,7 @@ function hudaring_custom_posts($request) {
         if ($featured_id) {
             $attachment = get_post($featured_id);
             $media_details = wp_get_attachment_metadata($featured_id);
-            $image_url = wp_get_attachment_url($featured_id);
+            // $image_url = wp_get_attachment_url($featured_id);
             $file_name = $media_details['file'] ?? null;
             $alt_text = get_post_meta($featured_id, '_wp_attachment_image_alt', true);
             $mime_type = $attachment->post_mime_type;
@@ -64,7 +64,7 @@ function hudaring_custom_posts($request) {
                 'id' => $featured_id,
                 'slug' => $attachment->post_name,
                 'title' => $attachment->post_title,
-                'source_url' => $image_url,
+                // 'source_url' => $image_url,
                 'file' => $file_name,
                 'width' => $media_details['width'] ?? null,
                 'height' => $media_details['height'] ?? null,
