@@ -150,6 +150,17 @@ namespace wpCloud\StatelessMedia {
             __("year and monthnum", $this->bootstrap->domain),
             __("The year of the post, four digits, for example 2004. Month of the year, for example 05", $this->bootstrap->domain),
             "\d{4}\/\d{2}"
+          ],
+          '%file_date_year/file_date_month%' => [
+            function() {
+              global $post;
+              $upload_post = $post ?: (isset($_REQUEST['post_id']) ? get_post($_REQUEST['post_id']) : null);
+              $file_date = $upload_post ? strtotime($upload_post->post_date) : time();
+              return date('Y', $file_date) . '/' . date('m', $file_date);
+            },
+            __("file created year and month", $this->bootstrap->domain),
+            __("The year and month the media file was created.", $this->bootstrap->domain),
+            "\d{4}\/\d{2}"
           ]
         );
       }
@@ -378,7 +389,7 @@ namespace wpCloud\StatelessMedia {
         if ( is_array( $wildcards ) && !empty( $wildcards ) ) {
           foreach ($wildcards as $wildcard => $values) {
             if (!empty($wildcard)) {
-              $replace = $values[0];
+              $replace = is_callable($values[0]) ? call_user_func($values[0]) : $values[0];
               if($regex){
                 $replace = isset($values[3]) ? $values[3] : preg_quote($values[0]);
               }
