@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Hudaring Slim API
- * Description: Custom REST endpoint that returns minimal post data with like count and featured image, using accurate upload date in URLs.
+ * Description: Custom REST endpoint that returns minimal post data with like count and featured image, with key-value size variants and metadata.
  * Version: 1.8
  * Author: hudaring
  */
@@ -21,7 +21,7 @@ function hudaring_custom_posts($request) {
     $args = [
         'post_type'      => 'post',
         'posts_per_page' => $per_page,
-        'paged'          => $page,
+        'paged'          => $page, // ✅ add this line
     ];
 
     $query = new WP_Query($args);
@@ -35,27 +35,28 @@ function hudaring_custom_posts($request) {
         if ($featured_id) {
             $attachment = get_post($featured_id);
             $media_details = wp_get_attachment_metadata($featured_id);
+            // $image_url = wp_get_attachment_url($featured_id);
+            $file_name = $media_details['file'] ?? null;
             $alt_text = get_post_meta($featured_id, '_wp_attachment_image_alt', true);
             $mime_type = $attachment->post_mime_type;
             $attachment_date = $attachment->post_date;
 
-            $file_path = $media_details['file'] ?? null;
-            $upload_dir = wp_upload_dir();
-            $baseurl = trailingslashit($upload_dir['baseurl']);
+            // Parse year and month from attachment date
+            $date_parts = explode('-', substr($attachment_date, 0, 7));
+            $year = $date_parts[0] ?? '0000';
+            $month = $date_parts[1] ?? '00';
+            $path_prefix = "/wp/$year/$month/";
 
-            // Build source_url from the correct relative file path
-            $source_url = $file_path ? $baseurl . $file_path : null;
-
-            // Generate resized_files using same folder as base file
+            // Generate resized file map
             $resized_files = [];
-            if ($file_path && strpos($file_path, '.') !== false) {
-                $dot_pos = strrpos($file_path, '.');
-                $name_only = substr($file_path, 0, $dot_pos);
-                $ext = substr($file_path, $dot_pos);
+            if ($file_name && strpos($file_name, '.') !== false) {
+                $dot_pos = strrpos($file_name, '.');
+                $name_only = substr($file_name, 0, $dot_pos);
+                $ext = substr($file_name, $dot_pos);
 
                 $postfixes = ['1024x1024', '500x500', '300x300', '150x150'];
                 foreach ($postfixes as $size) {
-                    $resized_files[$size] = $baseurl . $name_only . '-' . $size . $ext;
+                    $resized_files[$size] = $path_prefix . $name_only . '-' . $size . $ext;
                 }
             }
 
@@ -63,8 +64,8 @@ function hudaring_custom_posts($request) {
                 'id' => $featured_id,
                 'slug' => $attachment->post_name,
                 'title' => $attachment->post_title,
-                'source_url' => $source_url,
-                'file' => $file_path,
+                // 'source_url' => $image_url,
+                'file' => $file_name,
                 'width' => $media_details['width'] ?? null,
                 'height' => $media_details['height'] ?? null,
                 'alt_text' => $alt_text,
