@@ -157,22 +157,22 @@ if ( ! function_exists( 'twentytwentyfive_format_binding' ) ) :
 	}
 endif;
 
-add_filter('wp_stateless_file_name', 'fix_upload_folder_by_attachment_date', 10, 4);
-function fix_upload_folder_by_attachment_date($filename, $post_id, $attachment_metadata, $args) {
+add_filter('wp_stateless_file_name', 'hudaring_fix_stateless_file_path', 10, 4);
+function hudaring_fix_stateless_file_path($filename, $post_id, $metadata, $args) {
     if (!$post_id) return $filename;
 
     $post = get_post($post_id);
     if (!$post || $post->post_type !== 'attachment') return $filename;
 
-    // Use the date the attachment post was created
-    $date = $post->post_date;
+    // Extract file's upload timestamp
+    $upload_date = $post->post_date; // actual upload time
 
-    // Extract year and month
-    $year = date('Y', strtotime($date));
-    $month = date('m', strtotime($date));
-    $upload_dir = "wp/$year/$month/";
+    $year = date('Y', strtotime($upload_date));
+    $month = date('m', strtotime($upload_date));
 
-    // Return updated path
-    $basename = basename($filename);
-    return $upload_dir . $basename;
+    // Replace custom placeholders
+    $filename = str_replace('%file_date_year%', $year, $filename);
+    $filename = str_replace('%file_date_month%', $month, $filename);
+
+    return $filename;
 }
