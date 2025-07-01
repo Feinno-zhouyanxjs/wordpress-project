@@ -156,3 +156,26 @@ if ( ! function_exists( 'twentytwentyfive_format_binding' ) ) :
 		}
 	}
 endif;
+
+add_filter('wp_stateless_file_name', 'fix_upload_folder_by_image_creation_date', 10, 4);
+function fix_upload_folder_by_image_creation_date($filename, $post_id, $attachment_metadata, $args) {
+    if (!$post_id || !$attachment_metadata) return $filename;
+
+    $post = get_post($post_id);
+    if (!$post || $post->post_type !== 'attachment') return $filename;
+
+    $created_timestamp = $attachment_metadata['image_meta']['created_timestamp'] ?? 0;
+
+    // Fall back to current date if metadata is missing
+    if (!$created_timestamp || $created_timestamp == '0') {
+        $created_timestamp = strtotime($post->post_date_gmt);
+    }
+
+    // Format path using image creation time
+    $year = gmdate('Y', $created_timestamp);
+    $month = gmdate('m', $created_timestamp);
+    $upload_dir = "wp/$year/$month/";
+
+    $basename = basename($filename);
+    return $upload_dir . $basename;
+}
