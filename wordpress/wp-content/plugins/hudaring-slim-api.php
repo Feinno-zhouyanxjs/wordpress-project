@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Hudaring Slim API
  * Description: Custom REST endpoint that returns minimal post data with like count and featured image, with key-value size variants and metadata.
- * Version: 1.8
+ * Version: 1.9
  * Author: hudaring
  */
 
@@ -17,12 +17,22 @@ add_action('rest_api_init', function () {
 function hudaring_custom_posts($request) {
     $per_page = $request->get_param('per_page') ?: 5;
     $page = $request->get_param('page') ?: 1;
+    $category = $request->get_param('category'); // support slug or ID
 
     $args = [
         'post_type'      => 'post',
         'posts_per_page' => $per_page,
         'paged'          => $page, // ✅ add this line
     ];
+
+    // 🟨 Add category filtering
+    if (!empty($category)) {
+        if (is_numeric($category)) {
+            $args['cat'] = (int)$category; // category ID
+        } else {
+            $args['category_name'] = sanitize_title($category); // category slug
+        }
+    }
 
     $query = new WP_Query($args);
     $posts = [];
