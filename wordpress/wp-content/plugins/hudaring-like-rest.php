@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Hudaring Like REST API
  * Description: Adds a public REST API endpoint to increment like count for posts.
- * Version: 1.1
+ * Version: 1.3
  * Author: hudaring
  */
 
@@ -23,7 +23,7 @@ add_action('rest_api_init', function () {
     // Register /v2/like (identical behavior)
     register_rest_route('hudaring/v2', '/like', [
         'methods' => ['POST', 'GET'],
-        'callback' => 'hudaring_increment_like',
+        'callback' => 'hudaring_increment_like_v2',
         'permission_callback' => '__return_true',
         'args' => [
             'post_id' => [
@@ -58,5 +58,26 @@ function hudaring_increment_like($request) {
     return rest_ensure_response([
         'success' => true,
         'count' => $new_count
+    ]);
+}
+
+function hudaring_increment_like_v2($request) {
+    $post_id = $request->get_param('post_id');
+    $meta_key = 'hudaring_like_count';
+
+    if (!$post_id || get_post_status($post_id) === false) {
+        return new WP_Error('invalid_post', 'Invalid post ID', ['status' => 400]);
+    }
+
+    // Get current like count
+    $current = (int) get_post_meta($post_id, $meta_key, true);
+
+    // Increment and update
+    $new_count = $current + 1;
+    update_post_meta($post_id, $meta_key, $new_count);
+
+    return rest_ensure_response([
+        'status' => 'success',
+        'data' => ['count' => $new_count]
     ]);
 }
