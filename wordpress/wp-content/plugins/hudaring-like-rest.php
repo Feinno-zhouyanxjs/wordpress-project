@@ -21,32 +21,26 @@ add_action('rest_api_init', function () {
     ]);
 });
 
-// Initialize default like count on first publish
-add_action('save_post', function ($post_id) {
-    // Only apply to standard posts
-    if (get_post_type($post_id) !== 'post') {
-        return;
-    }
+add_action('save_post_post', function ($post_id, $post, $update) {
+    // Skip autosaves, revisions, and non-published statuses
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (wp_is_post_revision($post_id)) return;
+    if ($post->post_status !== 'publish') return;
 
-    // Avoid autosave loops
-    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-        return;
-    }
-
-    // Avoid updates from revisions, drafts, or trash
-    if (wp_is_post_revision($post_id) || get_post_status($post_id) !== 'publish') {
-        return;
-    }
-
-    // Set random like count only if it hasn't been set
+    // Check if like count already exists
     $meta_key = 'hudaring_like_count';
     $existing = get_post_meta($post_id, $meta_key, true);
 
     if ($existing === '' || $existing === false) {
         $random = rand(66, 198);
         update_post_meta($post_id, $meta_key, $random);
+
+        // Optional log for debugging
+        if (defined('WP_DEBUG') && WP_DEBUG === true) {
+            error_log("Like count initialized for post $post_id with $random");
+        }
     }
-});
+}, 10, 3);
 
 // Like count REST API logic
 function hudaring_increment_like($request) {
