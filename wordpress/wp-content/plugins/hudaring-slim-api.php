@@ -12,6 +12,12 @@ add_action('rest_api_init', function () {
         'callback' => 'hudaring_custom_posts',
         'permission_callback' => '__return_true'
     ]);
+
+    register_rest_route('hudaring/v2', '/posts', [
+        'methods' => 'GET',
+        'callback' => 'hudaring_custom_posts_v2',
+        'permission_callback' => '__return_true'
+    ]);
 });
 
 function hudaring_custom_posts($request) {
@@ -106,4 +112,18 @@ function hudaring_custom_posts($request) {
     }
 
     return rest_ensure_response($posts);
+}
+
+function hudaring_custom_posts_v2($request) {
+    // Call the original logic
+    $response = hudaring_custom_posts($request);
+    
+    // Extract response data if it's a WP_REST_Response
+    $posts = is_wp_error($response) ? [] : $response->get_data();
+
+    // Return wrapped response
+    return rest_ensure_response([
+        'status' => 'success',
+        'data' => $posts
+    ]);
 }
