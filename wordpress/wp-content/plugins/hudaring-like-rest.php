@@ -2,15 +2,16 @@
 /**
  * Plugin Name: Hudaring Like REST API
  * Description: Adds a public REST API endpoint to increment like count for posts.
- * Version: 1.0
+ * Version: 1.1
  * Author: hudaring
  */
 
+// Register REST API endpoint
 add_action('rest_api_init', function () {
     register_rest_route('hudaring/v1', '/like', [
         'methods' => ['POST', 'GET'],
         'callback' => 'hudaring_increment_like',
-        'permission_callback' => '__return_true', // ✅ No auth required
+        'permission_callback' => '__return_true',
         'args' => [
             'post_id' => [
                 'required' => true,
@@ -20,29 +21,34 @@ add_action('rest_api_init', function () {
     ]);
 });
 
+// Initialize default like count on first publish
 add_action('save_post', function ($post_id) {
-    // Only run on 'post' post type
+    // Only apply to standard posts
     if (get_post_type($post_id) !== 'post') {
         return;
     }
 
-    // Prevent infinite loops
+    // Avoid autosave loops
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
         return;
     }
 
-    // Avoid updating during revisions or autosave drafts
+    // Avoid updates from revisions, drafts, or trash
     if (wp_is_post_revision($post_id) || get_post_status($post_id) !== 'publish') {
         return;
     }
 
-    // Check if like count exists; if not, initialize with a random value between 66–198
-    if (get_post_meta($post_id, 'hudaring_like_count', true) === '') {
-        $random_like_count = rand(66, 198);
-        update_post_meta($post_id, 'hudaring_like_count', $random_like_count);
+    // Set random like count only if it hasn't been set
+    $meta_key = 'hudaring_like_count';
+    $existing = get_post_meta($post_id, $meta_key, true);
+
+    if ($existing === '' || $existing === false) {
+        $random = rand(66, 198);
+        update_post_meta($post_id, $meta_key, $random);
     }
 });
 
+// Like count REST API logic
 function hudaring_increment_like($request) {
     global $wpdb;
 
@@ -53,7 +59,7 @@ function hudaring_increment_like($request) {
         return new WP_Error('invalid_post', 'Invalid post ID', ['status' => 400]);
     }
 
-    // Ensure atomic update
+    // Atomic insert-or-increment query
     $wpdb->query($wpdb->prepare(
         "INSERT INTO {$wpdb->postmeta} (post_id, meta_key, meta_value)
          VALUES (%d, %s, 1)
