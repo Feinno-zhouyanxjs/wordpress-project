@@ -20,6 +20,29 @@ add_action('rest_api_init', function () {
     ]);
 });
 
+add_action('save_post', function ($post_id) {
+    // Only run on 'post' post type
+    if (get_post_type($post_id) !== 'post') {
+        return;
+    }
+
+    // Prevent infinite loops
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+
+    // Avoid updating during revisions or autosave drafts
+    if (wp_is_post_revision($post_id) || get_post_status($post_id) !== 'publish') {
+        return;
+    }
+
+    // Check if like count exists; if not, initialize with a random value between 66–198
+    if (get_post_meta($post_id, 'hudaring_like_count', true) === '') {
+        $random_like_count = rand(66, 198);
+        update_post_meta($post_id, 'hudaring_like_count', $random_like_count);
+    }
+});
+
 function hudaring_increment_like($request) {
     global $wpdb;
 
