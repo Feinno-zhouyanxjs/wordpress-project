@@ -85,6 +85,14 @@ function hudaring_custom_posts($request) {
             ];
         }
 
+        $meta_key = 'hudaring_like_count';
+        $like_count = get_post_meta($post_id, $meta_key, true);
+
+        if (empty($like_count) || (int)$like_count === 0) {
+            $like_count = rand(66, 198);
+            update_post_meta($post_id, $meta_key, $like_count);
+        }
+
         $posts[] = [
             'id' => $post_id,
             'slug' => $post->post_name,
@@ -92,7 +100,7 @@ function hudaring_custom_posts($request) {
             'date' => get_the_date('c', $post_id),
             'modified' => get_the_modified_date('c', $post_id),
             'link' => get_permalink($post_id),
-            'like_count' => (int) get_post_meta($post_id, 'hudaring_like_count', true),
+            'like_count' => (int) $like_count,
             'featured_image' => $images
         ];
     }
