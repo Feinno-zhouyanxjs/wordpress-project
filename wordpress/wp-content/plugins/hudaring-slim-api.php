@@ -88,7 +88,7 @@ function hudaring_custom_posts($request) {
         $meta_key = 'hudaring_like_count';
         $like_count = get_post_meta($post_id, $meta_key, true);
 
-        if ($like_count === '' || $like_count === false) {
+        if (empty($like_count) || (int)$like_count === 0) {
             $like_count = rand(66, 198);
             update_post_meta($post_id, $meta_key, $like_count);
         }
